@@ -215,6 +215,7 @@ module appInsights 'core/monitor/app-insights.bicep' = {
   }
 }
 
+/*
 module apim 'core/apim/apim.bicep' = {
   name: 'apim-deployment'
   params: {
@@ -232,7 +233,9 @@ module apim 'core/apim/apim.bicep' = {
     subnetId: vnet.outputs.apimSubnetId
   }
 }
+*/
 
+/*
 module graphragApi 'core/apim/apim.graphrag-documentation.bicep' = {
   name: 'graphrag-api-deployment'
   params: {
@@ -240,6 +243,7 @@ module graphragApi 'core/apim/apim.graphrag-documentation.bicep' = {
     backendUrl: appUrl
   }
 }
+*/
 
 module workloadIdentity 'core/identity/identity.bicep' = {
   name: 'workload-identity-deployment'
@@ -349,8 +353,8 @@ output azure_cosmosdb_endpoint string = cosmosdb.outputs.endpoint
 output azure_cosmosdb_name string = cosmosdb.outputs.name
 output azure_cosmosdb_id string = cosmosdb.outputs.id
 output azure_app_insights_connection_string string = appInsights.outputs.connectionString
-output azure_apim_name string = apim.outputs.name
-output azure_apim_gateway_url string = apim.outputs.apimGatewayUrl
+output azure_apim_name string = 'apim-yuabcnqrucq6a' // apim.outputs.name
+output azure_apim_gateway_url string = 'https://apim-yuabcnqrucq6a.azure-api.net' // apim.outputs.apimGatewayUrl
 output azure_dns_zone_name string = privateDnsZone.outputs.name
 output azure_app_hostname string = appHostname
 output azure_app_url string = appUrl

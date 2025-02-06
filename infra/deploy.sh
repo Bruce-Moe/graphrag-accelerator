@@ -284,8 +284,8 @@ getAksCredentials () {
     # assign "Azure Kubernetes Service RBAC Admin" role to deployer
     local scope=$(az aks show --resource-group $rg --name $aks --query "id" -o tsv)
     exitIfValueEmpty "$scope" "Unable to get AKS scope, exiting..."
-    az role assignment create --role "Azure Kubernetes Service RBAC Cluster Admin" --assignee-object-id $principalId --scope $scope
-    exitIfCommandFailed $? "Error assigning 'Azure Kubernetes Service RBAC Cluster Admin' role to deployer, exiting..."
+    # az role assignment create --role "Azure Kubernetes Service RBAC Cluster Admin" --assignee-object-id $principalId --scope $scope
+    # exitIfCommandFailed $? "Error assigning 'Azure Kubernetes Service RBAC Cluster Admin' role to deployer, exiting..."
     kubectl config set-context $aks --namespace=$aksNamespace
     printf "Done\n"
 }
@@ -339,7 +339,7 @@ deployAzureResources () {
     AZURE_OUTPUTS=$(jq -r .properties.outputs <<< $AZURE_DEPLOY_RESULTS)
     exitIfCommandFailed $? "Error parsing outputs from Azure deployment..."
     exitIfValueEmpty "$AZURE_OUTPUTS" "Error parsing outputs from Azure deployment..."
-    assignAOAIRoleToManagedIdentity
+    # assignAOAIRoleToManagedIdentity
 }
 
 validateSKUs() {
@@ -406,7 +406,7 @@ assignAOAIRoleToManagedIdentity() {
 
 installGraphRAGHelmChart () {
     echo "Deploying graphrag helm chart... "
-    local workloadId=$(jq -r .azure_workload_identity_client_id.value <<< $AZURE_OUTPUTS)
+    local workloadId="72d88666-e251-4061-82ab-6260c083a247"
     exitIfValueEmpty "$workloadId" "Unable to parse workload id from Azure outputs, exiting..."
 
     local serviceAccountName=$(jq -r .azure_aks_service_account_name.value <<< $AZURE_OUTPUTS)
@@ -427,7 +427,7 @@ installGraphRAGHelmChart () {
     local storageAccountBlobUrl=$(jq -r .azure_storage_account_blob_url.value <<< $AZURE_OUTPUTS)
     exitIfValueEmpty "$storageAccountBlobUrl" "Unable to parse storage account blob url from deployment outputs, exiting..."
 
-    local containerRegistryName=$(jq -r .azure_acr_login_server.value <<< $AZURE_OUTPUTS)
+    local containerRegistryName="cryuabcnqrucq6a"
     exitIfValueEmpty "$containerRegistryName" "Unable to parse container registry url from deployment outputs, exiting..."
 
     local graphragImageName=$(sed -rn "s/([^:]+).*/\1/p" <<< "$GRAPHRAG_IMAGE")
@@ -605,7 +605,7 @@ grantDevAccessToAzureResources() {
 }
 
 deployDockerImageToACR() {
-    local containerRegistry=$(jq -r .azure_acr_login_server.value <<< $AZURE_OUTPUTS)
+    local containerRegistry="cryuabcnqrucq6a.azurecr.io"
     exitIfValueEmpty "$containerRegistry" "Unable to parse container registry from azure deployment outputs, exiting..."
     echo "Deploying docker image '${GRAPHRAG_IMAGE}' to container registry '${containerRegistry}'..."
     local scriptDir="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
@@ -676,20 +676,22 @@ checkRequiredTools
 populateParams $PARAMS_FILE
 
 # Check SKU availability and quotas
-validateSKUs $LOCATION $VALIDATE_SKUS_FLAG
+# validateSKUs $LOCATION $VALIDATE_SKUS_FLAG
 
 # Create resource group
-createResourceGroupIfNotExists $LOCATION $RESOURCE_GROUP
+# createResourceGroupIfNotExists $LOCATION $RESOURCE_GROUP
 
 # Deploy Azure resources
-checkForApimSoftDelete
+# checkForApimSoftDelete
 deployAzureResources
 
+# assignAOAIRoleToManagedIdentity
+
 # Deploy the graphrag backend docker image to ACR
-deployDockerImageToACR
+# deployDockerImageToACR
 
 # Retrieve AKS credentials and install GraphRAG helm chart
-AKS_NAME=$(jq -r .azure_aks_name.value <<< $AZURE_OUTPUTS)
+AKS_NAME="aks-yuabcnqrucq6a"
 getAksCredentials $RESOURCE_GROUP $AKS_NAME
 installGraphRAGHelmChart
 
